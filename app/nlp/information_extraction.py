@@ -1,3 +1,4 @@
+from turtle import pos
 import spacy
 from spacy import displacy 
 from spacy.lang.en.stop_words import STOP_WORDS
@@ -8,7 +9,6 @@ from spacy.lang.en import English
 import networkx as nx
 import matplotlib.pyplot as plt
 
-
 class NlpAlgos:
 
     def __init__(self) -> None:
@@ -18,27 +18,26 @@ class NlpAlgos:
     def POS_tagging(self, text):
         # create spacy doc
         doc = self.nlp(text)
-
+        
+        pos_tags_dict = {}
         # applying POS to each token
         for token in doc:
-            print(token.text,'->',token.pos_)
-
+            pos_tags_dict[token.text] = token.pos_
         # filtering out tokens based on POS
-        for token in doc:
-            # check token pos
-            if token.pos_=='NOUN':
-                print(token)
-
+        return pos_tags_dict
 
     def dependency_graph(self, doc):
         spacy.displacy.serve(doc, style="dep")
 
-    def summarize(long_rev):
-        summ = spacy.load('en')
-        long_rev = summ(long_rev)
-        print(f"Number of sentences : {len(list(long_rev.sents))}\n")
+
+    def summarize(self, long_rev):
+        # summ = spacy.load('en')
+        long_rev = self.nlp(long_rev)
 
         keyword = []
+
+        summary_response = {}
+
         stopwords = list(STOP_WORDS)
         pos_tag = ['PROPN', 'ADJ', 'NOUN', 'VERB']
         for token in long_rev:
@@ -47,13 +46,10 @@ class NlpAlgos:
             if(token.pos_ in pos_tag):
                 keyword.append(token.text)
         freq_word = Counter(keyword)
-        print("Filtering tokens \n")
-        print(freq_word.most_common(5))
-
+        summary_response["word_freq"] = freq_word.most_common(5)
         # Normalization
         # Each sentence is weighed based on the 
         # frequency of the token present in each sentence
-
         max_freq = Counter(keyword).most_common(1)[0][1]
         for word in freq_word.keys():  
                 freq_word[word] = (freq_word[word]/max_freq)
@@ -69,44 +65,37 @@ class NlpAlgos:
                         sent_strength[sent]+=freq_word[word.text]
                     else:
                         sent_strength[sent]=freq_word[word.text]
-        print("sentences with their respective strengths \n")
-        print(sent_strength)
-
         # the nlargest function returns a list containing the top 3 sentences which are stored as summarized_sentences
-
         summarized_sentences = nlargest(3, sent_strength, key=sent_strength.get)
-        print("top 3 sentences with max strength ")
-        print(summarized_sentences,"\n")
-
-        print("Final Summarized Review ")
         final_sentences = [ w.text for w in summarized_sentences ]
         summary = ' '.join(final_sentences)
-        print(summary)
+        summary_response["summarized"] = summary
+        return summary_response
             
 
 class KnowledgeGraph:
 
-    def getSentences(text):
+    def getSentences(self, text):
         nlp = English()
         nlp.add_pipe(nlp.create_pipe('sentencizer'))
         document = nlp(text)
         return [sent.string.strip() for sent in document.sents]
 
 
-    def printToken(token):
+    def printToken(self, token):
         print(token.text, "->", token.dep_)
 
 
-    def appendChunk(original, chunk):
+    def appendChunk(self, original, chunk):
         return original + ' ' + chunk
 
 
-    def isRelationCandidate(token):
+    def isRelationCandidate(self, token):
         deps = ["ROOT", "adj", "attr", "agent", "amod"]
         return any(subs in token.dep_ for subs in deps)
 
 
-    def isConstructionCandidate(token):
+    def isConstructionCandidate(self, token):
         deps = ["compound", "prep", "conj", "mod"]
         return any(subs in token.dep_ for subs in deps)
 
@@ -144,7 +133,7 @@ class KnowledgeGraph:
         tokens = self.nlp(sentence)
         return self.processSubjectObjectPairs(tokens)
 
-    def printGraph(triples):
+    def printGraph(self, triples):
         G = nx.Graph()
         for triple in triples:
             G.add_node(triple[0])
@@ -164,7 +153,6 @@ class KnowledgeGraph:
 
     def knowledge_graph(self, text):
         sentences = self.getSentences(text)
-        nlp_model = spacy.load('en_core_web_sm')
         triples = []
         print (text)
         for sentence in sentences:
