@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from .models import Sentence
 from .nlp.information_extraction import NlpAlgos
-from .handlers.dataset_handler import IE_brand
+from .handlers.dataset_handler import IE_brand, get_dataframe_head
 
 # router object for handling api routes
 router = APIRouter()
@@ -17,9 +17,7 @@ async def pos_tag(sentence : Sentence):
 @router.post("/dependency_graph", response_description="generates a dependency graph for a sentence")
 async def generate_dependency_graph(sentence : Sentence):
     text = sentence.sentence
-    nlp = NlpAlgos().nlp
-    doc = nlp(text)
-    dependency_graph = NlpAlgos().dependency_graph(doc)
+    dependency_graph = NlpAlgos().dependency_graph(text)
     return dependency_graph
 
 
@@ -45,6 +43,12 @@ async def generate_sentiment(brand : str):
 async def generate_ner(sentence : Sentence):
     ner_applied = NlpAlgos().apply_ner(sentence.sentence)
     return ner_applied
+
+@router.post("/reviews/{brand}", response_description= "Named entitity recognition for a sentence")
+async def generate_dataframe(brand : str):
+    dataframe = get_dataframe_head(brand)
+    return dataframe
+
 
 
 

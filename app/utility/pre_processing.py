@@ -23,3 +23,9 @@ def clean(text):
     text = re.sub("[\(\[].*?[\)\]]", "", str(text))
 
     return text
+
+
+def cleanhtml(raw_html):
+  cleanr = re.compile('\\')
+  cleantext = re.sub(cleanr, '', raw_html)
+  return cleantext

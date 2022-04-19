@@ -1,5 +1,4 @@
 import logging
-from turtle import pos
 import spacy
 from spacy import displacy 
 from spacy.lang.en.stop_words import STOP_WORDS
@@ -10,6 +9,7 @@ from spacy.lang.en import English
 import networkx as nx
 import matplotlib.pyplot as plt
 
+from ..utility.pre_processing import cleanhtml
 class NlpAlgos:
 
     def __init__(self) -> None:
@@ -27,9 +27,11 @@ class NlpAlgos:
         # filtering out tokens based on POS
         return pos_tags_dict
 
-    def dependency_graph(self, doc):
-        spacy.displacy.serve(doc, style="dep")
-
+    def dependency_graph(self, text):
+        doc = self.nlp(text)
+        html = displacy.render(doc, style="dep", page=True, minify=True)
+        html_final = cleanhtml(html)
+        return {"raw_html" : html}
 
     def summarize(self, long_rev):
         # summ = spacy.load('en')
