@@ -1,3 +1,4 @@
+import logging
 from turtle import pos
 import spacy
 from spacy import displacy 
@@ -71,6 +72,14 @@ class NlpAlgos:
         summary = ' '.join(final_sentences)
         summary_response["summarized"] = summary
         return summary_response
+
+
+    def apply_ner(self, sentence):
+        doc = self.nlp(sentence)
+        ner = {}
+        for ent in doc.ents:
+            ner[ent.text] = ent.label_
+        return ner
             
 
 class KnowledgeGraph:

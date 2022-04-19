@@ -41,6 +41,10 @@ async def generate_sentiment(brand : str):
     }
 
 
+@router.post("/ner", response_description= "Named entitity recognition for a sentence")
+async def generate_ner(sentence : Sentence):
+    ner_applied = NlpAlgos().apply_ner(sentence.sentence)
+    return ner_applied
 
 
 
