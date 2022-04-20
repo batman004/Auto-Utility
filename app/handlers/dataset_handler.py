@@ -15,5 +15,20 @@ def IE_brand(brand):
 def get_dataframe_head(brand):
   path = "data/Scraped_Car_Review_" + brand + ".csv"
   df = pd.read_csv(path,delimiter=',', nrows = 5)
+  
   return df.to_dict()
+
+
+def get_dataframe_sentence(brand):
+  path = "data/Scraped_Car_Review_" + brand + ".csv"
+  df = pd.read_csv(path,delimiter=',', nrows = 5)
+  df_dict = df.to_dict()
+  review = df_dict["Review"]
+  sentence = review[1]
+  # sentence = f"I love the {brand} engines sound and specially the mileage it gives.would highly recommend this brand"
+  return sentence
+
+
+
+
 

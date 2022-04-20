@@ -1,4 +1,5 @@
 import logging
+import random
 import spacy
 from spacy import displacy 
 from spacy.lang.en.stop_words import STOP_WORDS
@@ -84,12 +85,11 @@ class NlpAlgos:
         return ner
             
 
-class KnowledgeGraph:
+class KnowledgeGraph(NlpAlgos):
 
     def getSentences(self, text):
-        nlp = English()
-        nlp.add_pipe(nlp.create_pipe('sentencizer'))
-        document = nlp(text)
+        self.nlp.add_pipe(self.nlp.create_pipe('sentencizer'))
+        document = self.nlp(text)
         return [sent.string.strip() for sent in document.sents]
 
 
@@ -145,6 +145,7 @@ class KnowledgeGraph:
         return self.processSubjectObjectPairs(tokens)
 
     def printGraph(self, triples):
+        request_id = random.randint(0, 20)
         G = nx.Graph()
         for triple in triples:
             G.add_node(triple[0])
@@ -159,7 +160,8 @@ class KnowledgeGraph:
                 node_size=500, node_color='seagreen', alpha=0.9,
                 labels={node: node for node in G.nodes()})
         plt.axis('off')
-        plt.show()
+        plt.savefig(f'graphs/knowledge_graph_{request_id}')
+        return plt.show()
 
 
     def knowledge_graph(self, text):

@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
 from .models import Sentence
-from .nlp.information_extraction import NlpAlgos
-from .handlers.dataset_handler import IE_brand, get_dataframe_head
+from .nlp.information_extraction import NlpAlgos, KnowledgeGraph
+from .handlers.dataset_handler import IE_brand, get_dataframe_head, get_dataframe_sentence
 
 # router object for handling api routes
 router = APIRouter()
@@ -14,7 +14,7 @@ async def pos_tag(sentence : Sentence):
     # pos_applied = json.dumps(pos_applied) 
     return pos_applied
 
-@router.post("/dependency_graph", response_description="generates a dependency graph for a sentence")
+@router.post("/dependency-graph", response_description="generates a dependency graph for a sentence")
 async def generate_dependency_graph(sentence : Sentence):
     text = sentence.sentence
     dependency_graph = NlpAlgos().dependency_graph(text)
@@ -48,6 +48,18 @@ async def generate_ner(sentence : Sentence):
 async def generate_dataframe(brand : str):
     dataframe = get_dataframe_head(brand)
     return dataframe
+
+
+@router.post("/knowledge-graph", response_description= "Named entitity recognition for a sentence")
+async def generate_knowledge_graph(sentence : Sentence):
+    knowledge_graph = KnowledgeGraph().knowledge_graph(sentence.sentence)
+    return knowledge_graph
+
+
+@router.post("/sentence", response_description= "Get the top review for a brand")
+async def generate_brand_sentence(brand : str):
+    review = get_dataframe_sentence(brand)
+    return review
 
 
 
